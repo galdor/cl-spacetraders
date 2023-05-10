@@ -3,11 +3,16 @@
   :author "Nicolas Martyanoff <nicolas@n16f.net>"
   :depends-on
   ("tungsten-core"
+   "tungsten-system"
    "tungsten-uri"
    "tungsten-netrc"
+   "tungsten-openapi"
    "tungsten-http")
   :pathname "src"
   :serial t
   :components
   ((:file "package")
+   (:file "api")
+   (:file "faction-traits")
+   (:file "factions")
    (:file "spacetraders")))
