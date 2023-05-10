@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -eu
+
+root=$(realpath $(dirname $0)/..)
+
+uri="https://stoplight.io/api/v1/projects/spacetraders/spacetraders/nodes/reference/SpaceTraders.json?&snapshotType=http_service&deref=optimizedBundle"
+
+cd $root
+curl -sSfL -o data/api.json $uri
