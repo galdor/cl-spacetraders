@@ -44,6 +44,9 @@
    #:faction-headquarters
    #:faction-traits
 
+   #:unknown-faction
+   #:unknown-faction-symbol
    #:register
    #:fetch-agent
+   #:fetch-faction
    #:find-faction))

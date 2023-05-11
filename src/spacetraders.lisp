@@ -1,5 +1,15 @@
 (in-package :spacetraders)
 
+(define-condition unknown-faction (error)
+  ((symbol
+    :type string
+    :initarg :symbol
+    :reader unknown-faction-symbol))
+  (:report
+   (lambda (condition stream)
+     (with-slots (symbol) condition
+       (format stream "Unknown faction ~S." symbol)))))
+
 (defun register (symbol faction)
   (declare (type string symbol faction))
   (let ((body `(("symbol" . ,symbol)
@@ -10,10 +20,10 @@
   (let ((data (call-api "get-my-agent")))
     (build-agent data)))
 
-(defun find-faction (name)
-  (declare (type string name))
+(defun fetch-faction (symbol)
+  (declare (type string symbol))
   (api-error-bind
-      ((404 (return-from find-faction nil)))
-    (let* ((parameters `((:path "factionSymbol" ,name)))
+      ((404 (error 'unknown-faction :symbol symbol)))
+    (let* ((parameters `((:path "factionSymbol" ,symbol)))
            (data (call-api "get-faction" :parameters parameters)))
       (build-faction data))))
