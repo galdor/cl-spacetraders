@@ -13,6 +13,7 @@
   :components
   ((:file "package")
    (:file "api")
+   (:file "systems")
    (:file "faction-traits")
    (:file "factions")
    (:file "spacetraders")))
