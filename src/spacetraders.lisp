@@ -6,6 +6,10 @@
                 ("faction" . ,faction))))
     (call-api "register" :body body :public t)))
 
+(defun fetch-agent ()
+  (let ((data (call-api "get-my-agent")))
+    (build-agent data)))
+
 (defun find-faction (name)
   (declare (type string name))
   (api-error-bind

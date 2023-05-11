@@ -17,6 +17,7 @@
    (:file "waypoints")
    (:file "systems")
    (:file "system-data")
+   (:file "agents")
    (:file "faction-traits")
    (:file "factions")
    (:file "spacetraders")))

@@ -26,6 +26,12 @@
    #:load-systems
    #:find-system
 
+   #:agent
+   #:agent-id
+   #:agent-symbol
+   #:agent-headquarters
+   #:agent-credits
+
    #:faction-trait
    #:faction-trait-symbol
    #:faction-trait-name
@@ -39,4 +45,5 @@
    #:faction-traits
 
    #:register
+   #:fetch-agent
    #:find-faction))
