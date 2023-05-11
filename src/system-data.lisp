@@ -32,6 +32,4 @@
 
 (defun find-system (symbol)
   (declare (type symbol symbol))
-  (unless *systems*
-    (load-systems))
   (gethash symbol *systems*))
