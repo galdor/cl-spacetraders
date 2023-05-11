@@ -8,6 +8,8 @@
 
 (defun find-faction (name)
   (declare (type string name))
-  (let* ((parameters `((:path "factionSymbol" ,name)))
-         (data (call-api "get-faction" :parameters parameters)))
-    (build-faction data)))
+  (api-error-bind
+      ((404 (return-from find-faction nil)))
+    (let* ((parameters `((:path "factionSymbol" ,name)))
+           (data (call-api "get-faction" :parameters parameters)))
+      (build-faction data))))
