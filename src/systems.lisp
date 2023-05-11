@@ -1,25 +1,44 @@
 (in-package :spacetraders)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defparameter *systems-uri*
-    (uri:parse "https://api.spacetraders.io/v2/systems.json"))
+(defclass system ()
+  ((symbol
+    :type string
+    :initarg :symbol
+    :accessor system-symbol)
+   (sector-symbol
+    :type string
+    :initarg :sector-symbol
+    :accessor system-sector-symbol)
+   (type
+    :type symbol
+    :initarg :type
+    :accessor system-type)
+   (point
+    :type point
+    :initarg :point
+    :accessor system-point)
+   (waypoints
+    :type list
+    :initarg :waypoints
+    :initform nil
+    :accessor system-waypoints)))
 
-  (defparameter *systems-path*
-    (asdf:system-relative-pathname "spacetraders" "data/systems.json"))
+(defmethod print-object ((system system) stream)
+  (print-unreadable-object (system stream :type t)
+    (with-slots (symbol type point) system
+      (format stream "~A ~A " symbol type)
+      (serialize-point point :stream stream))))
 
-  (defun fetch-systems ()
-    (let ((response (http:send-request :get *systems-uri*)))
-      (with-open-file (stream *systems-path* :direction :output
-                                             :if-exists :supersede
-                                             :if-does-not-exist :create
-                                             :element-type 'core:octet)
-        (write-sequence (http:response-body response) stream))
-      *systems-path*))
-
-  (defun load-systems ()
-    (unless (probe-file *systems-path*)
-      (fetch-systems))
-    (let ((data (system:read-file *systems-path* :external-format :utf-8)))
-      (json:parse data :mapping '(:array :element system))))
-
-  (defvar *systems* (load-systems)))
+(defun build-system (data)
+  (let ((system (make-instance 'system :point (data-point data))))
+    (dolist (entry data system)
+      (case (car entry)
+        (symbol
+         (setf (system-symbol system) (cdr entry)))
+        (sector-symbol
+         (setf (system-sector-symbol system) (cdr entry)))
+        (type
+         (setf (system-type system) (cdr entry)))
+        (waypoints
+         (setf (system-waypoints system)
+               (map 'list 'build-waypoint (cdr entry))))))))

@@ -13,7 +13,10 @@
   :components
   ((:file "package")
    (:file "api")
+   (:file "points")
+   (:file "waypoints")
    (:file "systems")
+   (:file "system-data")
    (:file "faction-traits")
    (:file "factions")
    (:file "spacetraders")))
