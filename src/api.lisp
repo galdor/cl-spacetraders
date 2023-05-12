@@ -114,6 +114,16 @@
     error))
 
 (defun call-api (operation-name &key parameters body public)
+  (loop
+    (restart-case
+        (return-from call-api
+          (send-api-request operation-name :parameters parameters
+                                           :body body
+                                           :public public))
+      (retry ()
+        :report "Send the same request again."))))
+
+(defun send-api-request (operation-name &key parameters body public)
   (declare (type string operation-name)
            (type list parameters))
   (let ((openapi:*server-uri* *api-uri*)
