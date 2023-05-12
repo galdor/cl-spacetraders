@@ -115,8 +115,8 @@
               (error api-error)
               (error 'http-error :response response))))
       (openapi:unexpected-response-content-type (condition)
-        (let* ((response
-                 (openapi:unexpected-response-content-type-response condition)))
+        (let* ((response (openapi:unexpected-response-content-type-response
+                          condition)))
           (error 'http-error :response response))))))
 
 (defmacro api-error-bind (forms &body body)
