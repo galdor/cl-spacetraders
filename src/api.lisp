@@ -97,15 +97,16 @@
                    *authentication-token*))
             header))
     (handler-case
-        (let ((response-data
-                (openapi:execute-operation *api-openapi-document*
-                                           operation-name
-                                           :parameters parameters
-                                           :body body
-                                           :header header)))
+        (multiple-value-bind (response-data response)
+            (openapi:execute-operation *api-openapi-document*
+                                       operation-name
+                                       :parameters parameters
+                                       :body body
+                                       :header header)
           ;; All endpoints but /register return the response as an object where
           ;; actual data are the value of the "data" entry.
-          (or (cdr (assoc 'data response-data)) response-data))
+          (values (or (cdr (assoc 'data response-data)) response-data)
+                  response))
       (openapi:unexpected-response-status (condition)
         (let* ((response
                  (openapi:unexpected-response-status-response condition))
