@@ -5,6 +5,14 @@
    #:*mock-api-uri*
    #:*api-uri*
    #:*authentication-token*
+   #:http-error
+   #:http-error-response
+   #:api-error
+   #:api-error-message
+   #:api-error-code
+   #:api-error-data
+   #:rate-limit-reached
+   #:rate-limit-reached-delay
 
    #:point
    #:point-x

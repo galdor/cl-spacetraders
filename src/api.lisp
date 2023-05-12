@@ -22,7 +22,8 @@
 (define-condition http-error (error)
   ((response
     :type http:response
-    :initarg :response))
+    :initarg :response
+    :reader http-error-response))
   (:report
    (lambda (condition stream)
      (with-slots (response) condition
@@ -52,6 +53,12 @@
          (format stream "Request failed with status ~D: error ~D: ~A"
                  status code message))))))
 
+(define-condition rate-limit-reached (api-error)
+  ((delay
+    :type float
+    :initarg :delay
+    :accessor rate-limit-reached-delay)))
+
 (json:define-mapping api-error
   :object
   :members
@@ -68,20 +75,43 @@
   :required
   ("error"))
 
+(json:define-mapping rate-limit-error-data
+  :object
+  :members
+  (("type" type (:string))
+   ("retryAfter" retry-after (:integer))
+   ("limitBurst" limit-burst (:integer))
+   ("limitPerSecond" limit-per-second (:integer))
+   ("remaining" remaining (:integer))
+   ("reset" reset (:string)))
+  :required
+  ("retryAfter"))
+
 (defun decode-api-error (response)
   (declare (type http:response response))
   (let* ((body (text:decode-string (http:response-body response)))
          (response-value (json:parse body :mapping 'api-error-response))
          (error-value (cdr (assoc 'error response-value)))
-         (error (make-condition 'api-error :response response)))
-    (dolist (entry error-value error)
+         (error-class (case (http:response-status response)
+                        (429 'rate-limit-reached)
+                        (t   'api-error)))
+         (error (make-condition error-class :response response)))
+    (dolist (entry error-value)
       (case (car entry)
         (message
          (setf (api-error-message error) (cdr entry)))
         (code
          (setf (api-error-code error) (cdr entry)))
         (data
-         (setf (api-error-data error) (cdr entry)))))))
+         (setf (api-error-data error) (cdr entry)))))
+    (case (http:response-status response)
+      (429
+       (let* ((data (api-error-data error))
+              (value (ignore-errors
+                      (json:validate data 'rate-limit-error-data)))
+              (delay (or (cdr (assoc 'retry-after value)) 1)))
+         (setf (rate-limit-reached-delay error) (float delay 0.0d0)))))
+    error))
 
 (defun call-api (operation-name &key parameters body public)
   (declare (type string operation-name)
