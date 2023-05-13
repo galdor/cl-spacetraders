@@ -114,6 +114,9 @@
     error))
 
 (defun call-api (operation-name &key parameters body public)
+  (declare (type string operation-name)
+           (type list parameters)
+           (type boolean public))
   (loop
     (restart-case
         (return-from call-api
@@ -125,7 +128,8 @@
 
 (defun send-api-request (operation-name &key parameters body public)
   (declare (type string operation-name)
-           (type list parameters))
+           (type list parameters)
+           (type boolean public))
   (let ((openapi:*server-uri* *api-uri*)
         (http:*client-netrc-authorization-scheme*
           (when (and (not public) (null *authentication-token*))
