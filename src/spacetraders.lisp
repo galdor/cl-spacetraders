@@ -10,6 +10,16 @@
      (with-slots (symbol) condition
        (format stream "Unknown faction ~S." symbol)))))
 
+(define-condition unknown-contract (error)
+  ((id
+    :type string
+    :initarg :id
+    :reader unknown-contract-symbol))
+  (:report
+   (lambda (condition stream)
+     (with-slots (id) condition
+       (format stream "Unknown contract ~S." id)))))
+
 (defun register (symbol faction)
   (declare (type string symbol faction))
   (let ((body `((symbol . ,symbol)
@@ -35,3 +45,10 @@
 (defun fetch-contracts ()
   (let* ((data (call-api "get-contracts" :paginated t :pagination-limit 20)))
     (mapcar 'build-contract data)))
+
+(defun accept-contract (id)
+  (declare (type string id))
+  (api-error-bind
+      ((404 (error 'unknown-contract :id id)))
+    (let ((parameters `((:path "contractId" ,id))))
+      (call-api "accept-contract" :parameters parameters))))

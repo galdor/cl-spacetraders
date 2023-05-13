@@ -54,7 +54,11 @@
 
    #:unknown-faction
    #:unknown-faction-symbol
+   #:unknown-contract
+   #:unknown-contract-id
    #:register
    #:fetch-agent
    #:fetch-faction
-   #:find-faction))
+   #:fetch-ships
+   #:fetch-contracts
+   #:accept-contract))
