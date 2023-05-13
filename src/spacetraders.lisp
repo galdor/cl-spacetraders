@@ -27,3 +27,7 @@
     (let* ((parameters `((:path "factionSymbol" ,symbol)))
            (data (call-api "get-faction" :parameters parameters)))
       (build-faction data))))
+
+(defun fetch-ships ()
+  (let* ((data (call-api "get-my-ships" :paginated t :pagination-limit 20)))
+    (mapcar 'build-ship data)))
