@@ -1,27 +1,11 @@
 (in-package :spacetraders)
 
 (defclass system ()
-  ((symbol
-    :type string
-    :initarg :symbol
-    :accessor system-symbol)
-   (sector-symbol
-    :type string
-    :initarg :sector-symbol
-    :accessor system-sector-symbol)
-   (type
-    :type symbol
-    :initarg :type
-    :accessor system-type)
-   (point
-    :type point
-    :initarg :point
-    :accessor system-point)
-   (waypoints
-    :type list
-    :initarg :waypoints
-    :initform nil
-    :accessor system-waypoints)))
+  ((symbol :type string :accessor system-symbol)
+   (sector-symbol :type string :accessor system-sector-symbol)
+   (type :type symbol :accessor system-type)
+   (point :type point :initarg :point :accessor system-point)
+   (waypoints :type list :accessor system-waypoints)))
 
 (defmethod print-object ((system system) stream)
   (print-unreadable-object (system stream :type t)

@@ -1,27 +1,11 @@
 (in-package :spacetraders)
 
 (defclass faction ()
-  ((symbol
-    :type string
-    :initarg :symbol
-    :accessor faction-symbol)
-   (name
-    :type string
-    :initarg :name
-    :accessor faction-name)
-   (description
-    :type string
-    :initarg :description
-    :accessor faction-description)
-   (headquarters
-    :type string
-    :initarg :headquarters
-    :accessor faction-headquarters)
-   (traits
-    :type list
-    :initarg :traits
-    :initform nil
-    :accessor faction-traits)))
+  ((symbol :type string :accessor faction-symbol)
+   (name :type string :accessor faction-name)
+   (description :type string :accessor faction-description)
+   (headquarters :type string :accessor faction-headquarters)
+   (traits :type list :accessor faction-traits)))
 
 (defmethod print-object ((faction faction) stream)
   (print-unreadable-object (faction stream :type t)

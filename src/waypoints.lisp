@@ -1,18 +1,9 @@
 (in-package :spacetraders)
 
 (defclass waypoint ()
-  ((symbol
-    :type string
-    :initarg :symbol
-    :accessor waypoint-symbol)
-   (type
-    :type symbol
-    :initarg :type
-    :accessor waypoint-type)
-   (point
-    :type point
-    :initarg :point
-    :accessor waypoint-point)))
+  ((symbol :type string :accessor waypoint-symbol)
+   (type :type symbol :accessor waypoint-type)
+   (point :type point :initarg :point :accessor waypoint-point)))
 
 (defmethod print-object ((waypoint waypoint) stream)
   (print-unreadable-object (waypoint stream :type t)

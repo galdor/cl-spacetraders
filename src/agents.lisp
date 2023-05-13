@@ -1,22 +1,10 @@
 (in-package :spacetraders)
 
 (defclass agent ()
-  ((id
-    :type string
-    :initarg :id
-    :accessor agent-id)
-   (symbol
-    :type string
-    :initarg :symbol
-    :accessor agent-symbol)
-   (headquarters
-    :type string
-    :initarg :headquarters
-    :accessor agent-headquarters)
-   (credits
-    :type integer
-    :initarg :credits
-    :accessor agent-credits)))
+  ((id :type string :accessor agent-id)
+   (symbol :type string :accessor agent-symbol)
+   (headquarters :type string :accessor agent-headquarters)
+   (credits :type integer :accessor agent-credits)))
 
 (defmethod print-object ((agent agent) stream)
   (print-unreadable-object (agent stream :type t)
