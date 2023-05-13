@@ -20,7 +20,7 @@
 (defun load-systems (&key force)
   (declare (type boolean force))
   (when (or (null *systems*) force)
-    (unless (probe-file *systems-path*)
+    (when (or (not (probe-file *systems-path*)) force)
       (fetch-systems))
     (let* ((string (system:read-file *systems-path* :external-format :utf-8))
            (data (json:parse string :mapping '(:array :element system)))
