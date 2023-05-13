@@ -11,6 +11,19 @@
     (with-slots (symbol) item
       (format stream "~A" symbol))))
 
+(defun build-cargo-item (data)
+  (let ((item (make-instance 'cargo-item)))
+    (dolist (entry data item)
+      (case (car entry)
+        (symbol
+         (setf (cargo-item-symbol item) (cdr entry)))
+        (name
+         (setf (cargo-item-name item) (cdr entry)))
+        (description
+         (setf (cargo-item-description item) (cdr entry)))
+        (units
+         (setf (cargo-item-units item) (cdr entry)))))))
+
 (defclass ship ()
   ((symbol :type string :accessor ship-symbol)
    (faction :type string :accessor ship-faction)
@@ -81,20 +94,7 @@
        (setf (ship-cargo-units ship) (cdr entry)))
       (inventory
        (setf (ship-cargo ship)
-             (map 'list 'build-ship/cargo-item (cdr entry)))))))
-
-(defun build-ship/cargo-item (data)
-  (let ((item (make-instance 'cargo-item)))
-    (dolist (entry data item)
-      (case (car entry)
-        (symbol
-         (setf (cargo-item-symbol item) (cdr entry)))
-        (name
-         (setf (cargo-item-name item) (cdr entry)))
-        (description
-         (setf (cargo-item-description item) (cdr entry)))
-        (units
-         (setf (cargo-item-units item) (cdr entry)))))))
+             (map 'list 'build-cargo-item (cdr entry)))))))
 
 (defun build-ship/fuel (data ship)
   (declare (type ship ship))
