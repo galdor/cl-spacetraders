@@ -15,7 +15,7 @@
   (let ((agent (make-instance 'agent)))
     (dolist (entry data agent)
       (case (car entry)
-        (id
+        (account-id
          (setf (agent-id agent) (cdr entry)))
         (symbol
          (setf (agent-symbol agent) (cdr entry)))
