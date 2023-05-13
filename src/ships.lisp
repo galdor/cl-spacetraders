@@ -1,5 +1,16 @@
 (in-package :spacetraders)
 
+(defclass cargo-item ()
+  ((symbol :type string :accessor cargo-item-symbol)
+   (name :type string :accessor cargo-item-name)
+   (description :type string :accessor cargo-item-description)
+   (units :type integer :accessor cargo-item-units)))
+
+(defmethod print-object ((item cargo-item) stream)
+  (print-unreadable-object (item stream :type t)
+    (with-slots (symbol) item
+      (format stream "~A" symbol))))
+
 (defclass ship ()
   ((symbol :type string :accessor ship-symbol)
    (faction :type string :accessor ship-faction)
@@ -8,7 +19,12 @@
    (waypoint :type string :accessor ship-waypoint)
    (route :type route :accessor ship-route)
    (navigation-status :type symbol :accessor ship-navigation-status)
-   (flight-mode :type symbol :accessor ship-flight-mode)))
+   (flight-mode :type symbol :accessor ship-flight-mode)
+   (cargo-units :type integer :accessor ship-cargo-units)
+   (cargo-capacity :type integer :accessor ship-cargo-capacity)
+   (cargo :type list :accessor ship-cargo)
+   (fuel :type integer :accessor ship-fuel)
+   (fuel-capacity :type integer :accessor ship-fuel-capacity)))
 
 (defmethod print-object ((ship ship) stream)
   (print-unreadable-object (ship stream :type t)
@@ -18,14 +34,18 @@
 (defun build-ship (data)
   (let ((ship (make-instance 'ship)))
     (dolist (entry data ship)
-      ;; TODO crew, frame, reactor, engine, modules, mounts, cargo, fuel.
+      ;; TODO crew, frame, reactor, engine, modules, mounts.
       (case (car entry)
         (symbol
          (setf (ship-symbol ship) (cdr entry)))
         (registration
          (build-ship/registration (cdr entry) ship))
         (nav
-         (build-ship/nav (cdr entry) ship))))))
+         (build-ship/nav (cdr entry) ship))
+        (cargo
+         (build-ship/cargo (cdr entry) ship))
+        (fuel
+         (build-ship/fuel (cdr entry) ship))))))
 
 (defun build-ship/registration (data ship)
   (declare (type ship ship))
@@ -50,3 +70,38 @@
        (setf (ship-navigation-status ship) (cdr entry)))
       (flight-mode
        (setf (ship-flight-mode ship) (cdr entry))))))
+
+(defun build-ship/cargo (data ship)
+  (declare (type ship ship))
+  (dolist (entry data)
+    (case (car entry)
+      (capacity
+       (setf (ship-cargo-capacity ship) (cdr entry)))
+      (units
+       (setf (ship-cargo-units ship) (cdr entry)))
+      (inventory
+       (setf (ship-cargo ship)
+             (map 'list 'build-ship/cargo-item (cdr entry)))))))
+
+(defun build-ship/cargo-item (data)
+  (let ((item (make-instance 'cargo-item)))
+    (dolist (entry data item)
+      (case (car entry)
+        (symbol
+         (setf (cargo-item-symbol item) (cdr entry)))
+        (name
+         (setf (cargo-item-name item) (cdr entry)))
+        (description
+         (setf (cargo-item-description item) (cdr entry)))
+        (units
+         (setf (cargo-item-units item) (cdr entry)))))))
+
+(defun build-ship/fuel (data ship)
+  (declare (type ship ship))
+  (dolist (entry data)
+    ;; TODO consumed
+    (case (car entry)
+      (current
+       (setf (ship-fuel ship) (cdr entry)))
+      (capacity
+       (setf (ship-fuel-capacity ship) (cdr entry))))))
