@@ -6,6 +6,7 @@
    (role :type symbol :accessor ship-role)
    (system :type string :accessor ship-system)
    (waypoint :type string :accessor ship-waypoint)
+   (route :type route :accessor ship-route)
    (navigation-status :type symbol :accessor ship-navigation-status)
    (flight-mode :type symbol :accessor ship-flight-mode)))
 
@@ -17,8 +18,7 @@
 (defun build-ship (data)
   (let ((ship (make-instance 'ship)))
     (dolist (entry data ship)
-      ;; TODO nav, crew, frame, reactor, engine, modules,
-      ;; mounts, cargo, fuel.
+      ;; TODO crew, frame, reactor, engine, modules, mounts, cargo, fuel.
       (case (car entry)
         (symbol
          (setf (ship-symbol ship) (cdr entry)))
@@ -39,12 +39,13 @@
 (defun build-ship/nav (data ship)
   (declare (type ship ship))
   (dolist (entry data)
-    ;; TODO route
     (case (car entry)
       (system-symbol
        (setf (ship-system ship) (cdr entry)))
       (waypoint-symbol
        (setf (ship-waypoint ship) (cdr entry)))
+      (route
+       (setf (ship-route ship) (build-route (cdr entry))))
       (status
        (setf (ship-navigation-status ship) (cdr entry)))
       (flight-mode

@@ -20,5 +20,6 @@
    (:file "agents")
    (:file "faction-traits")
    (:file "factions")
+   (:file "routes")
    (:file "ships")
    (:file "spacetraders")))
