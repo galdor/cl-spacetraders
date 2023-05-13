@@ -14,7 +14,7 @@
   (declare (type string symbol faction))
   (let ((body `(("symbol" . ,symbol)
                 ("faction" . ,faction))))
-    (call-api "register" :body body :public t)))
+    (send-api-request "register" :body body :public t)))
 
 (defun fetch-agent ()
   (let ((data (call-api "get-my-agent")))

@@ -113,18 +113,46 @@
          (setf (rate-limit-reached-delay error) (float delay 0.0d0)))))
     error))
 
-(defun call-api (operation-name &key parameters body public)
+(defun call-api (operation-name &key parameters body paginated
+                                     (pagination-limit 20))
   (declare (type string operation-name)
            (type list parameters)
-           (type boolean public))
-  (loop
-    (restart-case
-        (return-from call-api
-          (send-api-request operation-name :parameters parameters
-                                           :body body
-                                           :public public))
-      (retry ()
-        :report "Send the same request again."))))
+           (type boolean paginated))
+  (let ((page 1))
+    (flet ((send-request (&aux (parameters (copy-seq parameters)))
+             (loop
+               (restart-case
+                   (progn
+                     (when paginated
+                       (push `(:query "page" ,(princ-to-string page))
+                             parameters)
+                       (push
+                        `(:query "limit" ,(princ-to-string pagination-limit))
+                        parameters))
+                     (let ((response-data
+                             (send-api-request operation-name
+                                               :parameters parameters
+                                               :body body)))
+                       (return-from send-request
+                         (cdr (assoc 'data response-data)))))
+                 (retry ()
+                   :report "Send the same request again.")))))
+      (cond
+        (paginated
+         (do ((all-data nil))
+             (nil)
+           (let ((data (send-request)))
+             (do ((i 0 (1+ i)))
+                 ((>= i (length data))
+                  nil)
+               (push (aref data i) all-data))
+             (cond
+               ((< (length data) pagination-limit)
+                (return (nreverse all-data)))
+               (t
+                (incf page))))))
+        (t
+         (send-request))))))
 
 (defun send-api-request (operation-name &key parameters body public)
   (declare (type string operation-name)
@@ -141,16 +169,11 @@
                    *authentication-token*))
             header))
     (handler-case
-        (multiple-value-bind (response-data response)
-            (openapi:execute-operation *api-openapi-document*
-                                       operation-name
-                                       :parameters parameters
-                                       :body body
-                                       :header header)
-          ;; All endpoints but /register return the response as an object where
-          ;; actual data are the value of the "data" entry.
-          (values (or (cdr (assoc 'data response-data)) response-data)
-                  response))
+        (openapi:execute-operation *api-openapi-document*
+                                   operation-name
+                                   :parameters parameters
+                                   :body body
+                                   :header header)
       (openapi:unexpected-response-status (condition)
         (let* ((response
                  (openapi:unexpected-response-status-response condition))
