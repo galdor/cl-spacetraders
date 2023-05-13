@@ -61,4 +61,5 @@
    #:fetch-faction
    #:fetch-ships
    #:fetch-contracts
-   #:accept-contract))
+   #:accept-contract
+   #:fulfill-contract))

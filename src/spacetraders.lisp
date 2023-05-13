@@ -52,3 +52,10 @@
       ((404 (error 'unknown-contract :id id)))
     (let ((parameters `((:path "contractId" ,id))))
       (call-api "accept-contract" :parameters parameters))))
+
+(defun fulfill-contract (id)
+  (declare (type string id))
+  (api-error-bind
+      ((404 (error 'unknown-contract :id id)))
+    (let ((parameters `((:path "contractId" ,id))))
+      (call-api "fulfill-contract" :parameters parameters))))
