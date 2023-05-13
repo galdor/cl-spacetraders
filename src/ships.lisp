@@ -11,6 +11,28 @@
     (with-slots (symbol) item
       (format stream "~A" symbol))))
 
+(defclass ship-cargo ()
+  ((units :type integer :accessor ship-cargo-units)
+   (capacity :type integer :accessor ship-cargo-capacity)
+   (inventory :type list :accessor ship-cargo-inventory)))
+
+(defmethod print-object ((cargo ship-cargo) stream)
+  (print-unreadable-object (cargo stream :type t)
+    (with-slots (units capacity) cargo
+      (format stream "~D/~D" units capacity))))
+
+(defun build-ship-cargo (data)
+  (let ((cargo (make-instance 'ship-cargo)))
+    (dolist (entry data cargo)
+      (case (car entry)
+        (units
+         (setf (ship-cargo-units cargo) (cdr entry)))
+        (capacity
+         (setf (ship-cargo-capacity cargo) (cdr entry)))
+        (inventory
+         (setf (ship-cargo-inventory cargo)
+               (map 'list 'build-cargo-item (cdr entry))))))))
+
 (defun build-cargo-item (data)
   (let ((item (make-instance 'cargo-item)))
     (dolist (entry data item)
@@ -33,9 +55,7 @@
    (route :type route :accessor ship-route)
    (navigation-status :type symbol :accessor ship-navigation-status)
    (flight-mode :type symbol :accessor ship-flight-mode)
-   (cargo-units :type integer :accessor ship-cargo-units)
-   (cargo-capacity :type integer :accessor ship-cargo-capacity)
-   (cargo :type list :accessor ship-cargo)
+   (cargo :type ship-cargo :accessor ship-cargo)
    (fuel :type integer :accessor ship-fuel)
    (fuel-capacity :type integer :accessor ship-fuel-capacity)))
 
@@ -56,7 +76,7 @@
         (nav
          (build-ship/nav (cdr entry) ship))
         (cargo
-         (build-ship/cargo (cdr entry) ship))
+         (setf (ship-cargo ship) (build-ship-cargo (cdr entry))))
         (fuel
          (build-ship/fuel (cdr entry) ship))))))
 
@@ -83,18 +103,6 @@
        (setf (ship-navigation-status ship) (cdr entry)))
       (flight-mode
        (setf (ship-flight-mode ship) (cdr entry))))))
-
-(defun build-ship/cargo (data ship)
-  (declare (type ship ship))
-  (dolist (entry data)
-    (case (car entry)
-      (capacity
-       (setf (ship-cargo-capacity ship) (cdr entry)))
-      (units
-       (setf (ship-cargo-units ship) (cdr entry)))
-      (inventory
-       (setf (ship-cargo ship)
-             (map 'list 'build-cargo-item (cdr entry)))))))
 
 (defun build-ship/fuel (data ship)
   (declare (type ship ship))

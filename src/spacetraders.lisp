@@ -55,6 +55,20 @@
       (values (build-agent (cdr (assoc 'agent data)))
               (build-contract (cdr (assoc 'contract data)))))))
 
+(defun deliver-contract (id ship-symbol item-symbol units)
+  (declare (type string id ship-symbol item-symbol)
+           (type integer units))
+  (api-error-bind
+      ((404 (error 'unknown-contract :id id)))
+    (let* ((parameters `((:path "contractId" ,id)))
+           (body `((ship-symbol . ,ship-symbol)
+                   (trade-symbol . ,item-symbol)
+                   (units . ,units)))
+           (data
+             (call-api "deliver-contract" :parameters parameters :body body)))
+      (values (build-contract (cdr (assoc 'contract data)))
+              (build-ship-cargo (cdr (assoc 'cargo data)))))))
+
 (defun fulfill-contract (id)
   (declare (type string id))
   (api-error-bind
