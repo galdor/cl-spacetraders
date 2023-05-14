@@ -10,6 +10,16 @@
      (with-slots (symbol) condition
        (format stream "Unknown system ~S." symbol)))))
 
+(define-condition unknown-waypoint (error)
+  ((symbol
+    :type string
+    :initarg :symbol
+    :reader unknown-waypoint-symbol))
+  (:report
+   (lambda (condition stream)
+     (with-slots (symbol) condition
+       (format stream "Unknown waypoint ~S." symbol)))))
+
 (define-condition unknown-faction (error)
   ((symbol
     :type string

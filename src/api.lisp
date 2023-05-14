@@ -201,9 +201,28 @@
                 ,@forms))))
        (progn ,@body))))
 
+;;;
+;;; Systems
+;;;
+
+(defun call-api/get-shipyard (waypoint-symbol)
+  (declare (type string waypoint-symbol))
+  (let* ((system-symbol (waypoint-symbol-system-symbol waypoint-symbol))
+         (parameters `((:path "systemSymbol" ,system-symbol)
+                       (:path "waypointSymbol" ,waypoint-symbol))))
+    (call-api "get-shipyard" :parameters parameters)))
+
+;;;
+;;; Agents
+;;;
+
 (defun call-api/get-my-agent ()
   (let ((data (call-api "get-my-agent")))
     (create-from-api-data 'agent data)))
+
+;;;
+;;; Factions
+;;;
 
 (defun call-api/get-faction (symbol)
   (declare (type string symbol))
@@ -217,9 +236,17 @@
   (let* ((data (call-api "get-factions" :paginated t :pagination-limit 20)))
     (create-from-api-data 'faction data)))
 
+;;;
+;;; Ships
+;;;
+
 (defun call-api/get-my-ships ()
   (let* ((data (call-api "get-my-ships" :paginated t :pagination-limit 20)))
     (create-from-api-data 'ship data)))
+
+;;;
+;;; Contracts
+;;;
 
 (defun call-api/get-contracts ()
   (let* ((data (call-api "get-contracts" :paginated t :pagination-limit 20)))

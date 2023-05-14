@@ -66,6 +66,8 @@
 
    #:unknown-system
    #:unknown-system-symbol
+   #:unknown-waypoint
+   #:unknown-waypoint-symbol
    #:unknown-faction
    #:unknown-faction-symbol
    #:unknown-ship
@@ -93,13 +95,20 @@
    #:*client*
    #:make-client
    #:initialize-client
-   #:find-system
+
+   #:system
+   #:waypoint
+   #:fetch-waypoint-shipyard
+
    #:agent
+
    #:list-factions
    #:faction
+
    #:list-ships
    #:ship
    #:do-ships
+
    #:list-contracts
    #:contract
    #:accept-contract

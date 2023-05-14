@@ -348,3 +348,83 @@
                          (cons (alist-getf 'symbol data)
                                (alist-getf 'units data)))
                  value)))))
+
+;;;
+;;; Shipyards
+;;;
+
+(defclass shipyard-ship ()
+  ((type :type symbol :accessor shipyard-ship-type)
+   (name :type string :accessor shipyard-ship-name)
+   (description :type string :accessor shipyard-ship-description)
+   (price :type integer :accessor shipyard-ship-price)))
+
+(defmethod print-object ((ship shipyard-ship) stream)
+  (print-unreadable-object (ship stream :type t)
+    (with-slots (symbol price) ship
+      (format stream "~A ~D" symbol price))))
+
+(defmethod update-from-api-data ((ship shipyard-ship) data)
+  ;; TODO frame, reactor, engine, modules, mounts
+  (alist-case (value data)
+    (type
+      (setf (shipyard-ship-type ship) value))
+    (name
+      (setf (shipyard-ship-name ship) value))
+    (description
+      (setf (shipyard-ship-description ship) value))
+    (price
+      (setf (shipyard-ship-price ship) value))))
+
+(defclass shipyard-transaction ()
+  ((waypoint :type string :accessor shipyard-transaction-waypoint)
+   (ship :type string :accessor shipyard-transaction-ship)
+   (price :type string :accessor shipyard-transaction-price)
+   (agent :type string :accessor shipyard-transaction-agent)
+   (time :type time:datetime :accessor shipyard-transaction-time)))
+
+(defmethod print-object ((transaction shipyard-transaction) stream)
+  (print-unreadable-object (transaction stream :type t)
+    (with-slots (time price) transaction
+      (format stream "~A ~D" time price))))
+
+(defmethod update-from-api-data ((transaction shipyard-transaction) data)
+  (alist-case (value data)
+    (waypoint-symbol
+      (setf (shipyard-transaction-waypoint transaction) value))
+    (ship-symbol
+      (setf (shipyard-transaction-ship transaction) value))
+    (price
+      (setf (shipyard-transaction-price transaction) value))
+    (agent-symbol
+      (setf (shipyard-transaction-agent transaction) value))
+   (timestamp
+      (setf (shipyard-transaction-time transaction)
+            (time:parse-rfc3339-datetime value)))))
+
+(defclass shipyard ()
+  ((symbol :type string :accessor shipyard-symbol)
+   (ship-types :type list :accessor shipyard-ship-types)
+   (transactions :type list :accessor shipyard-transactions)
+   (ships :type list :accessor shipyard-ships)))
+
+(defmethod print-object ((shipyard shipyard) stream)
+  (print-unreadable-object (shipyard stream :type t)
+    (with-slots (symbol) shipyard
+      (format stream "~A" symbol))))
+
+(defmethod update-from-api-data ((shipyard shipyard) data)
+  (alist-case (value data)
+    (symbol
+      (setf (shipyard-symbol shipyard) value))
+    (ship-types
+      (setf (shipyard-ship-types shipyard)
+            (map 'list (lambda (data)
+                         (alist-getf 'type data))
+                 value)))
+    (transactions
+      (setf (shipyard-symbol shipyard)
+            (create-from-api-data 'shipyard-transaction value)))
+    (ships
+      (setf (shipyard-symbol shipyard)
+            (create-from-api-data 'shipyard-ship value)))))
