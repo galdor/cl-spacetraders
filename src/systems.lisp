@@ -2,7 +2,7 @@
 
 (defclass system ()
   ((symbol :type string :accessor system-symbol)
-   (sector-symbol :type string :accessor system-sector-symbol)
+   (sector :type string :accessor system-sector)
    (type :type symbol :accessor system-type)
    (point :type point :initarg :point :accessor system-point)
    (waypoints :type list :accessor system-waypoints)))
@@ -13,16 +13,21 @@
       (format stream "~A ~A " symbol type)
       (serialize-point point :stream stream))))
 
-(defun build-system (data)
-  (let ((system (make-instance 'system :point (data-point data))))
-    (dolist (entry data system)
-      (case (car entry)
-        (symbol
-         (setf (system-symbol system) (cdr entry)))
-        (sector-symbol
-         (setf (system-sector-symbol system) (cdr entry)))
-        (type
-         (setf (system-type system) (cdr entry)))
-        (waypoints
-         (setf (system-waypoints system)
-               (map 'list 'build-waypoint (cdr entry))))))))
+(defmethod update-from-api-data ((system system) data)
+  (let (x y)
+    (alist-case (value data)
+      (symbol
+        (setf (system-symbol system) value))
+      (sector-symbol
+        (setf (system-sector system) value))
+      (type
+        (setf (system-type system) value))
+      (x
+        (setf x value))
+      (y
+        (setf y value))
+      (waypoints
+        (setf (system-waypoints system)
+              (create-from-api-data 'waypoint value))))
+    (setf (system-point system) (point x y))
+    system))

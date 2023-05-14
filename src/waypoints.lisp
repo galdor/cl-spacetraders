@@ -11,11 +11,16 @@
       (format stream "~A ~A " symbol type)
       (serialize-point point :stream stream))))
 
-(defun build-waypoint (data)
-  (let ((waypoint (make-instance 'waypoint :point (data-point data))))
-    (dolist (entry data waypoint)
-      (case (car entry)
-        (symbol
-         (setf (waypoint-symbol waypoint) (cdr entry)))
-        (type
-         (setf (waypoint-type waypoint) (cdr entry)))))))
+(defmethod update-from-api-data ((waypoint waypoint) data)
+  (let (x y)
+    (alist-case (value data)
+      (symbol
+        (setf (waypoint-symbol waypoint) value))
+      (type
+        (setf (waypoint-type waypoint) value))
+      (x
+        (setf x value))
+      (y
+        (setf y value)))
+    (setf (waypoint-point waypoint) (point x y))
+    waypoint))

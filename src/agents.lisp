@@ -11,15 +11,13 @@
     (with-slots (symbol) agent
       (format stream "~A" symbol))))
 
-(defun build-agent (data)
-  (let ((agent (make-instance 'agent)))
-    (dolist (entry data agent)
-      (case (car entry)
-        (account-id
-         (setf (agent-id agent) (cdr entry)))
-        (symbol
-         (setf (agent-symbol agent) (cdr entry)))
-        (headquarters
-         (setf (agent-headquarters agent) (cdr entry)))
-        (credits
-         (setf (agent-credits agent) (cdr entry)))))))
+(defmethod update-from-api-data ((agent agent) data)
+  (alist-case (value data agent)
+    (account-id
+      (setf (agent-id agent) value))
+    (symbol
+      (setf (agent-symbol agent) value))
+    (headquarters
+      (setf (agent-headquarters agent) value))
+    (credits
+      (setf (agent-credits agent) value))))

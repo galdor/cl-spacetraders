@@ -139,16 +139,16 @@
                    :report "Send the same request again.")))))
       (cond
         (paginated
-         (do ((all-data nil))
+         (do ((all-data (make-array 0 :adjustable t :fill-pointer 0)))
              (nil)
            (let ((data (send-request)))
              (do ((i 0 (1+ i)))
                  ((>= i (length data))
                   nil)
-               (push (aref data i) all-data))
+               (vector-push-extend (aref data i) all-data))
              (cond
                ((< (length data) pagination-limit)
-                (return (nreverse all-data)))
+                (return all-data))
                (t
                 (incf page))))))
         (t
@@ -194,3 +194,16 @@
               (case (api-error-code condition)
                 ,@forms))))
        (progn ,@body))))
+
+(defgeneric update-from-api-data (object data))
+
+(defun create-from-api-data (class data)
+  (declare (type (or symbol class) class)
+           (type (or list vector) data))
+  (etypecase data
+    (list
+     (update-from-api-data (make-instance class) data))
+    (vector
+     (map 'list (lambda (value)
+                  (create-from-api-data class value))
+          data))))

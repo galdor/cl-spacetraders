@@ -29,7 +29,7 @@
           ((>= i (length data))
            (setf *systems* systems))
         (let* ((system-data (aref data i))
-               (system (build-system system-data)))
+               (system (create-from-api-data 'system system-data)))
           (setf (gethash (system-symbol system) systems) system))))))
 
 (defun find-system (symbol)

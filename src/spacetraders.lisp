@@ -28,7 +28,7 @@
 
 (defun fetch-agent ()
   (let ((data (call-api "get-my-agent")))
-    (build-agent data)))
+    (create-from-api-data 'agent data)))
 
 (defun fetch-faction (symbol)
   (declare (type string symbol))
@@ -36,15 +36,15 @@
       ((404 (error 'unknown-faction :symbol symbol)))
     (let* ((parameters `((:path "factionSymbol" ,symbol)))
            (data (call-api "get-faction" :parameters parameters)))
-      (build-faction data))))
+      (create-from-api-data 'faction data))))
 
 (defun fetch-ships ()
   (let* ((data (call-api "get-my-ships" :paginated t :pagination-limit 20)))
-    (mapcar 'build-ship data)))
+    (create-from-api-data 'ship data)))
 
 (defun fetch-contracts ()
   (let* ((data (call-api "get-contracts" :paginated t :pagination-limit 20)))
-    (mapcar 'build-contract data)))
+    (create-from-api-data 'contract data)))
 
 (defun accept-contract (id)
   (declare (type string id))
@@ -52,8 +52,8 @@
       ((404 (error 'unknown-contract :id id)))
     (let* ((parameters `((:path "contractId" ,id)))
            (data (call-api "accept-contract" :parameters parameters)))
-      (values (build-agent (cdr (assoc 'agent data)))
-              (build-contract (cdr (assoc 'contract data)))))))
+      (values (create-from-api-data 'agent (alist-getf 'agent data))
+              (create-from-api-data 'contract (alist-getf 'contract data))))))
 
 (defun deliver-contract (id ship-symbol item-symbol units)
   (declare (type string id ship-symbol item-symbol)
@@ -66,8 +66,8 @@
                    (units . ,units)))
            (data
              (call-api "deliver-contract" :parameters parameters :body body)))
-      (values (build-contract (cdr (assoc 'contract data)))
-              (build-ship-cargo (cdr (assoc 'cargo data)))))))
+      (values (create-from-api-data 'contract (alist-getf 'contract data))
+              (alist-getf 'cargo data)))))
 
 (defun fulfill-contract (id)
   (declare (type string id))
@@ -75,5 +75,5 @@
       ((404 (error 'unknown-contract :id id)))
     (let* ((parameters `((:path "contractId" ,id)))
            (data (call-api "fulfill-contract" :parameters parameters)))
-      (values (build-agent (cdr (assoc 'agent data)))
-              (build-contract (cdr (assoc 'contract data)))))))
+      (values (create-from-api-data 'agent (alist-getf 'agent data))
+              (create-from-api-data 'contract (alist-getf 'contract data))))))

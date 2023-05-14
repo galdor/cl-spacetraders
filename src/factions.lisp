@@ -12,18 +12,18 @@
     (with-slots (symbol) faction
       (format stream "~A" symbol))))
 
-(defun build-faction (data)
-  (let ((faction (make-instance 'faction)))
-    (dolist (entry data faction)
-      (case (car entry)
-        (symbol
-         (setf (faction-symbol faction) (cdr entry)))
-        (name
-         (setf (faction-name faction) (cdr entry)))
-        (description
-         (setf (faction-description faction) (cdr entry)))
-        (headquarters
-         (setf (faction-headquarters faction) (cdr entry)))
-        (traits
-         (setf (faction-traits faction)
-               (map 'list 'build-faction-trait (cdr entry))))))))
+(defmethod update-from-api-data ((faction faction) data)
+  (alist-case (value data faction)
+    (symbol
+      (setf (faction-symbol faction) value))
+    (name
+      (setf (faction-name faction) value))
+    (description
+      (setf (faction-description faction) value))
+    (headquarters
+      (setf (faction-headquarters faction) value))
+    (traits
+      (setf (faction-traits faction)
+            (map 'list (lambda (data)
+                         (alist-getf 'symbol data))
+                 value)))))

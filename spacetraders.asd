@@ -12,13 +12,13 @@
   :serial t
   :components
   ((:file "package")
+   (:file "alists")
    (:file "api")
    (:file "points")
    (:file "waypoints")
    (:file "systems")
    (:file "system-data")
    (:file "agents")
-   (:file "faction-traits")
    (:file "factions")
    (:file "routes")
    (:file "contracts")

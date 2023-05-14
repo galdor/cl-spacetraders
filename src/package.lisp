@@ -14,6 +14,9 @@
    #:rate-limit-reached
    #:rate-limit-reached-delay
 
+   #:alist-getf
+   #:alist-case
+
    #:point
    #:point-x
    #:point-y
@@ -26,7 +29,7 @@
 
    #:system
    #:system-symbol
-   #:system-sector-symbol
+   #:system-sector
    #:system-type
    #:system-point
    #:system-waypoints
@@ -40,17 +43,42 @@
    #:agent-headquarters
    #:agent-credits
 
-   #:faction-trait
-   #:faction-trait-symbol
-   #:faction-trait-name
-   #:faction-trait-description
-
    #:faction
    #:faction-symbol
    #:faction-name
    #:faction-description
    #:faction-headquarters
    #:faction-traits
+
+   #:contract-good
+   #:contract
+   #:contract-id
+   #:contract-faction
+   #:contract-type
+   #:contract-goods
+   #:contract-accepted
+   #:contract-fulfilled
+   #:contract-expiration-time
+   #:contract-deadline
+   #:contract-initial-payment
+   #:contract-final-payment
+
+   #:ship
+   #:ship-symbol
+   #:ship-faction
+   #:ship-role
+   #:ship-system
+   #:ship-waypoint
+   #:ship-route
+   #:ship-navigation-status
+   #:ship-flight-mode
+   #:ship-cargo-units
+   #:ship-cargo-capacity
+   #:ship-cargo
+   #:ship-fuel
+   #:ship-fuel-capacity
+   #:ship-last-fuel-consumption-amount
+   #:ship-last-fuel-consumption-time
 
    #:unknown-faction
    #:unknown-faction-symbol
