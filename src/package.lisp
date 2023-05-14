@@ -21,9 +21,6 @@
    #:system-point
    #:system-waypoints
 
-   #:fetchs-systems
-   #:load-systems
-
    #:agent
    #:agent-id
    #:agent-symbol
@@ -89,6 +86,9 @@
    #:rate-limit-reached
    #:rate-limit-reached-delay
    #:register
+
+   #:fetchs-systems
+   #:load-systems
 
    #:*client*
    #:make-client
