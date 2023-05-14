@@ -254,20 +254,18 @@
     (with-slots (departure destination) route
       (format stream "~A - ~A" departure destination))))
 
-(defun build-route (data)
-  (let ((route (make-instance 'route)))
-    (dolist (entry data route)
-      (case (car entry)
-        (departure
-         (setf (route-departure route) (cdr (assoc 'symbol (cdr entry)))))
-        (destination
-         (setf (route-destination route) (cdr (assoc 'symbol (cdr entry)))))
-        (departure-time
-         (setf (route-departure-time route)
-               (time:parse-rfc3339-datetime (cdr entry))))
-        (arrival
-         (setf (route-arrival-time route)
-               (time:parse-rfc3339-datetime (cdr entry))))))))
+(defmethod update-from-api-data ((route route) data)
+  (alist-case (value data route)
+    (departure
+      (setf (route-departure route) (alist-getf 'symbol value)))
+    (destination
+      (setf (route-destination route) (alist-getf 'symbol value)))
+    (departure-time
+      (setf (route-departure-time route)
+            (time:parse-rfc3339-datetime value)))
+    (arrival
+      (setf (route-arrival-time route)
+            (time:parse-rfc3339-datetime value)))))
 
 ;;;
 ;;; Ships
@@ -315,7 +313,8 @@
         (waypoint-symbol
           (setf (ship-waypoint ship) value))
         (route
-          (setf (ship-route ship) (build-route value)))
+          (setf (ship-route ship)
+                (create-from-api-data 'route value)))
         (status
           (setf (ship-navigation-status ship) value))
         (flight-mode
