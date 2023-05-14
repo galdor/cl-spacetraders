@@ -1,5 +1,15 @@
 (in-package :spacetraders)
 
+(define-condition unknown-system (error)
+  ((symbol
+    :type string
+    :initarg :symbol
+    :reader unknown-system-symbol))
+  (:report
+   (lambda (condition stream)
+     (with-slots (symbol) condition
+       (format stream "Unknown system ~S." symbol)))))
+
 (define-condition unknown-faction (error)
   ((symbol
     :type string

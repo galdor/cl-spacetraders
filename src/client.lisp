@@ -3,13 +3,17 @@
 (defvar *client* nil)
 
 (defclass client ()
-  ((factions
+  ((systems
     :type hash-table
     :initform (make-hash-table :test #'equal)
-    :accessor client-factions)
+    :accessor client-systems)
    (agent
     :type agent
     :accessor client-agent)
+   (factions
+    :type hash-table
+    :initform (make-hash-table :test #'equal)
+    :accessor client-factions)
    (ships
     :type hash-table
     :initform (make-hash-table :test #'equal)
@@ -29,20 +33,27 @@
 
 (defun initialize-client ()
   (let ((client (make-client)))
+    (setf (client-systems client) (load-systems))
     (setf (client-agent client) (call-api/get-my-agent))
     (let ((factions (make-hash-table :test #'equal))
-        (ships (make-hash-table :test #'equal))
-        (contracts (make-hash-table :test #'equal)))
-    (dolist (faction (call-api/get-factions))
-      (setf (gethash (faction-symbol faction) factions) faction))
-    (dolist (ship (call-api/get-my-ships))
-      (setf (gethash (ship-symbol ship) ships) ship))
-    (dolist (contract (call-api/get-contracts))
-      (setf (gethash (contract-id contract) contracts) contract))
-    (setf (client-factions client) factions
-          (client-ships client) ships
-          (client-contracts client) contracts))
+          (ships (make-hash-table :test #'equal))
+          (contracts (make-hash-table :test #'equal)))
+      (dolist (faction (call-api/get-factions))
+        (setf (gethash (faction-symbol faction) factions) faction))
+      (dolist (ship (call-api/get-my-ships))
+        (setf (gethash (ship-symbol ship) ships) ship))
+      (dolist (contract (call-api/get-contracts))
+        (setf (gethash (contract-id contract) contracts) contract))
+      (setf (client-factions client) factions
+            (client-ships client) ships
+            (client-contracts client) contracts))
     (setf *client* client)))
+
+(defun find-system (symbol)
+  (declare (type string symbol))
+  (with-slots (systems) *client*
+    (or (gethash symbol systems)
+        (error 'unknown-system :symbol symbol))))
 
 (defun agent ()
   (client-agent *client*))

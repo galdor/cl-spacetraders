@@ -21,8 +21,8 @@
    #:system-point
    #:system-waypoints
 
+   #:fetchs-systems
    #:load-systems
-   #:find-system
 
    #:agent
    #:agent-id
@@ -67,6 +67,8 @@
    #:ship-last-fuel-consumption-amount
    #:ship-last-fuel-consumption-time
 
+   #:unknown-system
+   #:unknown-system-symbol
    #:unknown-faction
    #:unknown-faction-symbol
    #:unknown-ship
@@ -91,6 +93,7 @@
    #:*client*
    #:make-client
    #:initialize-client
+   #:find-system
    #:agent
    #:list-factions
    #:faction
