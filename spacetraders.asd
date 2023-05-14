@@ -23,4 +23,5 @@
    (:file "routes")
    (:file "contracts")
    (:file "ships")
-   (:file "spacetraders")))
+   (:file "spacetraders")
+   (:file "client")))

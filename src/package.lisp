@@ -87,6 +87,7 @@
    #:register
    #:fetch-agent
    #:fetch-faction
+   #:fetch-factions
    #:fetch-ships
    #:fetch-contracts
    #:accept-contract

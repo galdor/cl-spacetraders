@@ -38,6 +38,10 @@
            (data (call-api "get-faction" :parameters parameters)))
       (create-from-api-data 'faction data))))
 
+(defun fetch-factions ()
+  (let* ((data (call-api "get-factions" :paginated t :pagination-limit 20)))
+    (create-from-api-data 'faction data)))
+
 (defun fetch-ships ()
   (let* ((data (call-api "get-my-ships" :paginated t :pagination-limit 20)))
     (create-from-api-data 'ship data)))
