@@ -1,19 +1,6 @@
 (defpackage :spacetraders
   (:use :cl)
   (:export
-   #:*default-api-uri*
-   #:*mock-api-uri*
-   #:*api-uri*
-   #:*authentication-token*
-   #:http-error
-   #:http-error-response
-   #:api-error
-   #:api-error-message
-   #:api-error-code
-   #:api-error-data
-   #:rate-limit-reached
-   #:rate-limit-reached-delay
-
    #:alist-getf
    #:alist-case
 
@@ -82,13 +69,36 @@
 
    #:unknown-faction
    #:unknown-faction-symbol
+   #:unknown-ship
+   #:unknown-ship-symbol
    #:unknown-contract
    #:unknown-contract-id
+
+   #:*default-api-uri*
+   #:*mock-api-uri*
+   #:*api-uri*
+   #:*authentication-token*
+   #:http-error
+   #:http-error-response
+   #:api-error
+   #:api-error-message
+   #:api-error-code
+   #:api-error-data
+   #:rate-limit-reached
+   #:rate-limit-reached-delay
    #:register
-   #:fetch-agent
-   #:fetch-faction
-   #:fetch-factions
-   #:fetch-ships
-   #:fetch-contracts
+
+   #:*client*
+   #:make-client
+   #:initialize-client
+   #:agent
+   #:list-factions
+   #:faction
+   #:list-ships
+   #:ship
+   #:do-ships
+   #:list-contracts
+   #:contract
    #:accept-contract
+   #:deliver-contract
    #:fulfill-contract))

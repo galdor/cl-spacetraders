@@ -13,7 +13,7 @@
   :components
   ((:file "package")
    (:file "alists")
-   (:file "api")
+   (:file "objects")
    (:file "points")
    (:file "waypoints")
    (:file "systems")
@@ -23,5 +23,6 @@
    (:file "routes")
    (:file "contracts")
    (:file "ships")
-   (:file "spacetraders")
+   (:file "conditions")
+   (:file "api")
    (:file "client")))

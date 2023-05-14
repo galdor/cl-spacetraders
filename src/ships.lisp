@@ -48,17 +48,7 @@
         (flight-mode
           (setf (ship-flight-mode ship) value))))
     (cargo
-      (alist-case (value value)
-        (units
-          (setf (ship-cargo-units ship) value))
-        (capacity
-          (setf (ship-cargo-capacity ship) value))
-        (inventory
-          (setf (ship-cargo ship)
-                (map 'list (lambda (data)
-                             (cons (alist-getf 'symbol data)
-                                   (alist-getf 'units data)))
-                     value)))))
+      (update-ship-from-cargo-api-data ship value))
     (fuel
       (alist-case (value value)
         (current
@@ -72,3 +62,17 @@
             (timestamp
               (setf (ship-last-fuel-consumption-time ship)
                     (time:parse-rfc3339-datetime value)))))))))
+
+(defun update-ship-from-cargo-api-data (ship data)
+  (declare (type ship ship))
+  (alist-case (value data)
+    (units
+      (setf (ship-cargo-units ship) value))
+    (capacity
+      (setf (ship-cargo-capacity ship) value))
+    (inventory
+      (setf (ship-cargo ship)
+            (map 'list (lambda (data)
+                         (cons (alist-getf 'symbol data)
+                               (alist-getf 'units data)))
+                 value)))))

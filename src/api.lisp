@@ -186,6 +186,12 @@
                           condition)))
           (error 'http-error :response response))))))
 
+(defun register (symbol faction)
+  (declare (type string symbol faction))
+  (let ((body `((symbol . ,symbol)
+                (faction . ,faction))))
+    (send-api-request "register" :body body :public t)))
+
 (defmacro api-error-bind (forms &body body)
   `(block nil
      (handler-bind
@@ -195,15 +201,58 @@
                 ,@forms))))
        (progn ,@body))))
 
-(defgeneric update-from-api-data (object data))
+(defun call-api/get-my-agent ()
+  (let ((data (call-api "get-my-agent")))
+    (create-from-api-data 'agent data)))
 
-(defun create-from-api-data (class data)
-  (declare (type (or symbol class) class)
-           (type (or list vector) data))
-  (etypecase data
-    (list
-     (update-from-api-data (make-instance class) data))
-    (vector
-     (map 'list (lambda (value)
-                  (create-from-api-data class value))
-          data))))
+(defun call-api/get-faction (symbol)
+  (declare (type string symbol))
+  (api-error-bind
+      ((404 (error 'unknown-faction :symbol symbol)))
+    (let* ((parameters `((:path "factionSymbol" ,symbol)))
+           (data (call-api "get-faction" :parameters parameters)))
+      (create-from-api-data 'faction data))))
+
+(defun call-api/get-factions ()
+  (let* ((data (call-api "get-factions" :paginated t :pagination-limit 20)))
+    (create-from-api-data 'faction data)))
+
+(defun call-api/get-my-ships ()
+  (let* ((data (call-api "get-my-ships" :paginated t :pagination-limit 20)))
+    (create-from-api-data 'ship data)))
+
+(defun call-api/get-contracts ()
+  (let* ((data (call-api "get-contracts" :paginated t :pagination-limit 20)))
+    (create-from-api-data 'contract data)))
+
+(defun call-api/accept-contract (id)
+  (declare (type string id))
+  (api-error-bind
+      ((404 (error 'unknown-contract :id id)))
+    (let* ((parameters `((:path "contractId" ,id)))
+           (data (call-api "accept-contract" :parameters parameters)))
+      (values (alist-getf 'agent data)
+              (alist-getf 'contract data)))))
+
+(defun call-api/deliver-contract (id ship-symbol item-symbol units)
+  (declare (type string id ship-symbol item-symbol)
+           (type integer units))
+  (api-error-bind
+      ((404 (error 'unknown-contract :id id)))
+    (let* ((parameters `((:path "contractId" ,id)))
+           (body `((ship-symbol . ,ship-symbol)
+                   (trade-symbol . ,item-symbol)
+                   (units . ,units)))
+           (data
+             (call-api "deliver-contract" :parameters parameters :body body)))
+      (values (alist-getf 'contract data)
+              (alist-getf 'cargo data)))))
+
+(defun call-api/fulfill-contract (id)
+  (declare (type string id))
+  (api-error-bind
+      ((404 (error 'unknown-contract :id id)))
+    (let* ((parameters `((:path "contractId" ,id)))
+           (data (call-api "fulfill-contract" :parameters parameters)))
+      (values (alist-getf 'agent data)
+              (alist-getf 'contract data)))))
