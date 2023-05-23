@@ -116,7 +116,8 @@
   ((id :type string :accessor agent-id)
    (symbol :type string :accessor agent-symbol)
    (headquarters :type string :accessor agent-headquarters)
-   (credits :type integer :accessor agent-credits)))
+   (credits :type integer :accessor agent-credits)
+   (starting-faction :type string :accessor agent-starting-faction)))
 
 (defmethod print-object ((agent agent) stream)
   (print-unreadable-object (agent stream :type t)
@@ -132,7 +133,9 @@
     (headquarters
       (setf (agent-headquarters agent) value))
     (credits
-      (setf (agent-credits agent) value))))
+      (setf (agent-credits agent) value))
+    (starting-faction
+      (setf (agent-starting-faction agent) value))))
 
 ;;;
 ;;; Factions
@@ -143,7 +146,8 @@
    (name :type string :accessor faction-name)
    (description :type string :accessor faction-description)
    (headquarters :type string :accessor faction-headquarters)
-   (traits :type list :accessor faction-traits)))
+   (traits :type list :accessor faction-traits)
+   (recruiting :type boolean :accessor faction-recruiting)))
 
 (defmethod print-object ((faction faction) stream)
   (print-unreadable-object (faction stream :type t)
@@ -164,7 +168,9 @@
       (setf (faction-traits faction)
             (map 'list (lambda (data)
                          (alist-getf 'symbol data))
-                 value)))))
+                 value)))
+    (is-recruiting
+      (setf (faction-recruiting faction) value))))
 
 ;;;
 ;;; Contracts
@@ -235,7 +241,7 @@
       (setf (contract-accepted contract) value))
     (fulfilled
       (setf (contract-fulfilled contract) value))
-    (expiration
+    (deadline-to-accept
       (setf (contract-expiration-time contract)
             (time:parse-rfc3339-datetime value)))))
 

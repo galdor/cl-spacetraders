@@ -26,6 +26,7 @@
    #:agent-symbol
    #:agent-headquarters
    #:agent-credits
+   #:agent-starting-faction
 
    #:faction
    #:faction-symbol
@@ -33,6 +34,7 @@
    #:faction-description
    #:faction-headquarters
    #:faction-traits
+   #:faction-recruiting
 
    #:contract-good
    #:contract
